@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      extension_settings: {
+        Row: {
+          allowed_senders: string[] | null
+          attention_rules: Json | null
+          attention_rules_enabled: boolean | null
+          auto_send_first_contact_only: boolean | null
+          created_at: string
+          default_bcc: string[] | null
+          default_cc: string[] | null
+          id: string
+          identity: string | null
+          ignored_senders: string[] | null
+          ignored_subjects: string[] | null
+          knowledge: string | null
+          reply_decision_instructions: string | null
+          reply_decision_mode: string | null
+          reply_style: string | null
+          signature: string | null
+          skip_no_reply_senders: boolean | null
+          skip_replied_threads: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allowed_senders?: string[] | null
+          attention_rules?: Json | null
+          attention_rules_enabled?: boolean | null
+          auto_send_first_contact_only?: boolean | null
+          created_at?: string
+          default_bcc?: string[] | null
+          default_cc?: string[] | null
+          id?: string
+          identity?: string | null
+          ignored_senders?: string[] | null
+          ignored_subjects?: string[] | null
+          knowledge?: string | null
+          reply_decision_instructions?: string | null
+          reply_decision_mode?: string | null
+          reply_style?: string | null
+          signature?: string | null
+          skip_no_reply_senders?: boolean | null
+          skip_replied_threads?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allowed_senders?: string[] | null
+          attention_rules?: Json | null
+          attention_rules_enabled?: boolean | null
+          auto_send_first_contact_only?: boolean | null
+          created_at?: string
+          default_bcc?: string[] | null
+          default_cc?: string[] | null
+          id?: string
+          identity?: string | null
+          ignored_senders?: string[] | null
+          ignored_subjects?: string[] | null
+          knowledge?: string | null
+          reply_decision_instructions?: string | null
+          reply_decision_mode?: string | null
+          reply_style?: string | null
+          signature?: string | null
+          skip_no_reply_senders?: boolean | null
+          skip_replied_threads?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
