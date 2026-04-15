@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
+import { useExtensionDownload } from "@/hooks/use-extension-download";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { handleDownload } = useExtensionDownload();
 
   const links = [
     { label: "How it works", href: "#how-it-works" },
@@ -59,8 +60,8 @@ const Navbar = () => {
               <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
                 Sign In
               </Button>
-              <Button variant="hero" size="sm" asChild>
-                <a href={EXTENSION_DOWNLOAD_URL} download>Get the Extension</a>
+              <Button variant="hero" size="sm" onClick={handleDownload}>
+                Get the Extension
               </Button>
             </>
           )}
@@ -99,10 +100,8 @@ const Navbar = () => {
                 <Button variant="ghost" size="sm" onClick={() => { navigate("/auth"); setMobileOpen(false); }}>
                   Sign In
                 </Button>
-                <Button variant="hero" size="sm" asChild>
-                  <a href={EXTENSION_DOWNLOAD_URL} download onClick={() => setMobileOpen(false)}>
-                    Get the Extension
-                  </a>
+                <Button variant="hero" size="sm" onClick={(e) => { handleDownload(e); setMobileOpen(false); }}>
+                  Get the Extension
                 </Button>
               </>
             )}
