@@ -1,13 +1,13 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 export function useExtensionDownload() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleDownload = (e: React.MouseEvent) => {
+  const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!user) {
       toast({
@@ -17,7 +17,26 @@ export function useExtensionDownload() {
       navigate("/auth");
       return;
     }
-    window.open(EXTENSION_DOWNLOAD_URL, "_blank");
+
+    const { data, error } = await supabase.storage
+      .from("extension-downloads")
+      .download("ChromeExtensionAgent 2.rar");
+
+    if (error || !data) {
+      toast({
+        title: "Download failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "SendSmart-Extension.rar";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return { handleDownload };
