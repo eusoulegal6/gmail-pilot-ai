@@ -36,6 +36,7 @@ const steps = [
 ];
 
 const InstallSection = () => {
+  const { handleDownload } = useExtensionDownload();
   return (
     <section id="install" className="py-24 md:py-32">
       <div className="container mx-auto px-6">
@@ -66,11 +67,9 @@ const InstallSection = () => {
         </div>
 
         <div className="flex justify-center mt-10">
-          <Button variant="hero" size="lg" asChild>
-            <a href={EXTENSION_DOWNLOAD_URL} download className="gap-2">
-              <Download size={18} />
-              Download Send Smart
-            </a>
+          <Button variant="hero" size="lg" onClick={handleDownload} className="gap-2">
+            <Download size={18} />
+            Download Send Smart
           </Button>
         </div>
 

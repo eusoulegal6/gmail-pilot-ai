@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
+import { useExtensionDownload } from "@/hooks/use-extension-download";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
