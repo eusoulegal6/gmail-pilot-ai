@@ -1,9 +1,9 @@
 import { Mail, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
+import { useExtensionDownload } from "@/hooks/use-extension-download";
 
 const HeroSection = () => {
-  return (
+  const { handleDownload } = useExtensionDownload();
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Background glows — four colors */}
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-brand-blue/8 blur-[120px] animate-pulse-glow" />
@@ -28,11 +28,9 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-            <Button variant="hero" size="lg" asChild>
-              <a href={EXTENSION_DOWNLOAD_URL} download className="gap-2">
-                <Mail size={18} />
-                Get the Extension
-              </a>
+            <Button variant="hero" size="lg" onClick={handleDownload} className="gap-2">
+              <Mail size={18} />
+              Get the Extension
             </Button>
             <Button variant="hero-outline" size="lg" asChild>
               <a href="#how-it-works">See How It Works</a>
