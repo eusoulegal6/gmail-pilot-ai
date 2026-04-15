@@ -7,6 +7,7 @@ import { useExtensionDownload } from "@/hooks/use-extension-download";
 const DashboardHero = () => {
   const { user } = useAuth();
   const { handleDownload } = useExtensionDownload();
+  const [showVideo, setShowVideo] = useState(false);
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
 
   return (
