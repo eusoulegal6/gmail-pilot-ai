@@ -36,6 +36,22 @@ const HowItWorksSection = () => {
           </p>
         </div>
 
+        {/* Demo video */}
+        <div className="max-w-3xl mx-auto mb-16">
+          <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+            <video
+              className="w-full"
+              controls
+              playsInline
+              preload="metadata"
+              poster=""
+            >
+              <source src="/videos/send-smart-demo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+
         <div className="max-w-3xl mx-auto">
           <div className="space-y-8">
             {steps.map((step, i) => (
