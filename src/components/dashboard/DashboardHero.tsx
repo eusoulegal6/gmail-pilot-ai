@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, BookOpen, Play } from "lucide-react";
+import { Download, BookOpen, Play, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useExtensionDownload } from "@/hooks/use-extension-download";
@@ -40,7 +40,14 @@ const DashboardHero = () => {
 
         {showVideo && (
           <div className="mt-8 max-w-3xl">
-            <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
+            <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl relative">
+              <button
+                onClick={() => setShowVideo(false)}
+                className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm text-foreground hover:bg-background transition-colors"
+                aria-label="Close video"
+              >
+                <X size={16} />
+              </button>
               <video
                 className="w-full"
                 controls
