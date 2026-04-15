@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -59,7 +60,7 @@ const Navbar = () => {
                 Sign In
               </Button>
               <Button variant="hero" size="sm" asChild>
-                <a href="#install">Get the Extension</a>
+                <a href={EXTENSION_DOWNLOAD_URL} download>Get the Extension</a>
               </Button>
             </>
           )}
@@ -99,7 +100,7 @@ const Navbar = () => {
                   Sign In
                 </Button>
                 <Button variant="hero" size="sm" asChild>
-                  <a href="#install" onClick={() => setMobileOpen(false)}>
+                  <a href={EXTENSION_DOWNLOAD_URL} download onClick={() => setMobileOpen(false)}>
                     Get the Extension
                   </a>
                 </Button>
