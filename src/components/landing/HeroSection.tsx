@@ -4,6 +4,7 @@ import { useExtensionDownload } from "@/hooks/use-extension-download";
 
 const HeroSection = () => {
   const { handleDownload } = useExtensionDownload();
+  return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Background glows — four colors */}
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-brand-blue/8 blur-[120px] animate-pulse-glow" />

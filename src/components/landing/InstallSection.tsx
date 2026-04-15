@@ -1,6 +1,6 @@
 import { Download, FolderOpen, Chrome, ToggleRight, Upload, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
+import { useExtensionDownload } from "@/hooks/use-extension-download";
 
 const steps = [
   {
