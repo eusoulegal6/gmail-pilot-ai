@@ -52,6 +52,7 @@ const HowItWorksSection = () => {
           </div>
         </div>
 
+        <div className="max-w-3xl mx-auto">
           <div className="space-y-8">
             {steps.map((step, i) => (
               <div key={step.number} className="flex gap-6 group">
