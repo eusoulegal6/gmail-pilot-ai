@@ -1,0 +1,66 @@
+import { Clock, MessageSquare, Fingerprint, Shield, PenTool, Settings } from "lucide-react";
+
+const benefits = [
+  {
+    icon: Clock,
+    title: "Fewer repetitive tasks",
+    description: "Stop typing the same answers to the same questions. Let AI handle the patterns you've already solved.",
+  },
+  {
+    icon: MessageSquare,
+    title: "More consistent replies",
+    description: "Every response follows your tone and includes the right information — no off-days or missed details.",
+  },
+  {
+    icon: Fingerprint,
+    title: "Your business context",
+    description: "Replies are generated using your products, services, policies, and writing style — not generic templates.",
+  },
+  {
+    icon: PenTool,
+    title: "Signatures & knowledge",
+    description: "Attach your email signature, business info, and key details so replies always feel complete and professional.",
+  },
+  {
+    icon: Shield,
+    title: "Built for reliability",
+    description: "The unread-only workflow ensures each email is processed once. No duplicate replies, no stuck automation.",
+  },
+  {
+    icon: Settings,
+    title: "Configurable rules",
+    description: "Set sender filters, CC/BCC defaults, and reply preferences to match your operational needs.",
+  },
+];
+
+const BenefitsSection = () => {
+  return (
+    <section id="benefits" className="py-24 md:py-32">
+      <div className="container mx-auto px-6">
+        <div className="max-w-2xl mx-auto text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            Built for people who actually use email to run a business
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Not another inbox widget. A focused tool for operational email.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {benefits.map((b) => (
+            <div
+              key={b.title}
+              className="rounded-xl border border-border bg-card p-6 hover:border-primary/20 transition-colors"
+            >
+              <b.icon className="h-6 w-6 text-primary mb-4" />
+              <h3 className="font-semibold mb-2">{b.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{b.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default BenefitsSection;
