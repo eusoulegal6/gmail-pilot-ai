@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const links = [
     { label: "How it works", href: "#how-it-works" },
@@ -13,10 +17,15 @@ const Navbar = () => {
     { label: "Pricing", href: "#pricing" },
   ];
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <a href="#" className="text-xl font-bold tracking-tight">
+        <a href="/" className="text-xl font-bold tracking-tight">
           <span className="text-gradient">Send Smart</span>
         </a>
 
@@ -32,10 +41,28 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:block">
-          <Button variant="hero" size="sm" asChild>
-            <a href="#install">Get the Extension</a>
-          </Button>
+        <div className="hidden md:flex items-center gap-3">
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground flex items-center gap-2">
+                <User size={14} />
+                {user.email}
+              </span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut size={16} className="mr-1" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
+                Sign In
+              </Button>
+              <Button variant="hero" size="sm" asChild>
+                <a href="#install">Get the Extension</a>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -59,11 +86,25 @@ const Navbar = () => {
                 {l.label}
               </a>
             ))}
-            <Button variant="hero" size="sm" asChild>
-              <a href="#install" onClick={() => setMobileOpen(false)}>
-                Get the Extension
-              </a>
-            </Button>
+            {user ? (
+              <>
+                <span className="text-sm text-muted-foreground">{user.email}</span>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" onClick={() => { navigate("/auth"); setMobileOpen(false); }}>
+                  Sign In
+                </Button>
+                <Button variant="hero" size="sm" asChild>
+                  <a href="#install" onClick={() => setMobileOpen(false)}>
+                    Get the Extension
+                  </a>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}
