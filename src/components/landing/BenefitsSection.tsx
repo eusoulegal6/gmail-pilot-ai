@@ -5,31 +5,43 @@ const benefits = [
     icon: Clock,
     title: "Fewer repetitive tasks",
     description: "Stop typing the same answers to the same questions. Let AI handle the patterns you've already solved.",
+    color: "text-brand-red",
+    bg: "bg-brand-red/10",
   },
   {
     icon: MessageSquare,
     title: "More consistent replies",
     description: "Every response follows your tone and includes the right information — no off-days or missed details.",
+    color: "text-brand-blue",
+    bg: "bg-brand-blue/10",
   },
   {
     icon: Fingerprint,
     title: "Your business context",
     description: "Replies are generated using your products, services, policies, and writing style — not generic templates.",
+    color: "text-brand-yellow",
+    bg: "bg-brand-yellow/10",
   },
   {
     icon: PenTool,
     title: "Signatures & knowledge",
     description: "Attach your email signature, business info, and key details so replies always feel complete and professional.",
+    color: "text-brand-green",
+    bg: "bg-brand-green/10",
   },
   {
     icon: Shield,
     title: "Built for reliability",
     description: "The unread-only workflow ensures each email is processed once. No duplicate replies, no stuck automation.",
+    color: "text-brand-red",
+    bg: "bg-brand-red/10",
   },
   {
     icon: Settings,
     title: "Configurable rules",
     description: "Set sender filters, CC/BCC defaults, and reply preferences to match your operational needs.",
+    color: "text-brand-blue",
+    bg: "bg-brand-blue/10",
   },
 ];
 
@@ -52,7 +64,9 @@ const BenefitsSection = () => {
               key={b.title}
               className="rounded-xl border border-border bg-card p-6 hover:border-primary/20 transition-colors"
             >
-              <b.icon className="h-6 w-6 text-primary mb-4" />
+              <div className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${b.bg} mb-4`}>
+                <b.icon className={`h-5 w-5 ${b.color}`} />
+              </div>
               <h3 className="font-semibold mb-2">{b.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{b.description}</p>
             </div>
