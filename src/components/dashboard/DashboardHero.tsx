@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, BookOpen, Play } from "lucide-react";
+import { Download, BookOpen, Play, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useExtensionDownload } from "@/hooks/use-extension-download";
