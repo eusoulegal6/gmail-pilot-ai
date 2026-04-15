@@ -1,4 +1,6 @@
 import { Download, FolderOpen, Chrome, ToggleRight, Upload, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
 
 const steps = [
   {
@@ -63,7 +65,16 @@ const InstallSection = () => {
           ))}
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-8">
+        <div className="flex justify-center mt-10">
+          <Button variant="hero" size="lg" asChild>
+            <a href={EXTENSION_DOWNLOAD_URL} download className="gap-2">
+              <Download size={18} />
+              Download Send Smart
+            </a>
+          </Button>
+        </div>
+
+        <p className="text-center text-sm text-muted-foreground mt-6">
           Works with Chrome, Edge, Brave, Arc, and other Chromium-based browsers.
         </p>
       </div>

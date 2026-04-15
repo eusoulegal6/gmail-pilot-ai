@@ -1,5 +1,6 @@
 import { Mail, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
 
 const HeroSection = () => {
   return (
@@ -28,7 +29,7 @@ const HeroSection = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-up" style={{ animationDelay: "0.3s" }}>
             <Button variant="hero" size="lg" asChild>
-              <a href="#install" className="gap-2">
+              <a href={EXTENSION_DOWNLOAD_URL} download className="gap-2">
                 <Mail size={18} />
                 Get the Extension
               </a>
