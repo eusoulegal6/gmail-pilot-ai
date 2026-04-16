@@ -113,6 +113,39 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_counters: {
+        Row: {
+          created_at: string
+          emails_used: number
+          id: string
+          input_tokens_used: number
+          output_tokens_used: number
+          period: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emails_used?: number
+          id?: string
+          input_tokens_used?: number
+          output_tokens_used?: number
+          period: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emails_used?: number
+          id?: string
+          input_tokens_used?: number
+          output_tokens_used?: number
+          period?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
