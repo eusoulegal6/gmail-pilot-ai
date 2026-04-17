@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      extension_login_codes: {
-        Row: {
-          code: string
-          created_at: string
-          expires_at: string
-          id: string
-          used_at: string | null
-          user_id: string
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          expires_at: string
-          id?: string
-          used_at?: string | null
-          user_id: string
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          expires_at?: string
-          id?: string
-          used_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       extension_settings: {
         Row: {
           allowed_senders: string[] | null

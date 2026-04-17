@@ -88,19 +88,18 @@ const Auth = () => {
     if (!codeEmail) return;
     setCodeLoading(true);
     try {
-      localStorage.setItem("pendingExtensionLogin", "1");
       const { error } = await supabase.auth.signInWithOtp({
         email: codeEmail,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: `${window.location.origin}/extension-login`,
+          emailRedirectTo: window.location.origin,
         },
       });
       if (error) throw error;
       setCodeStep("verify");
       toast({
-        title: "Check your email",
-        description: `We sent a sign-in link to ${codeEmail}. Click it to get your extension code.`,
+        title: "Code sent",
+        description: `We emailed a 6-digit code to ${codeEmail}.`,
       });
     } catch (error: any) {
       toast({
@@ -140,16 +139,12 @@ const Auth = () => {
     if (!codeEmail) return;
     setCodeLoading(true);
     try {
-      localStorage.setItem("pendingExtensionLogin", "1");
       const { error } = await supabase.auth.signInWithOtp({
         email: codeEmail,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: `${window.location.origin}/extension-login`,
-        },
+        options: { shouldCreateUser: true, emailRedirectTo: window.location.origin },
       });
       if (error) throw error;
-      toast({ title: "Email resent", description: "Check your inbox." });
+      toast({ title: "Code resent", description: "Check your inbox." });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -237,34 +232,41 @@ const Auth = () => {
                     {codeLoading ? "Sending..." : "Send me a code"}
                   </Button>
                   <p className="text-center text-xs text-muted-foreground">
-                    We'll email you a sign-in link. Click it to land on a page
-                    that shows a 6-digit code for the Send Smart extension.
+                    We'll email you a 6-digit code. The same code works in the
+                    Send Smart extension.
                   </p>
                 </form>
               ) : (
-                <div className="space-y-4">
-                  <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm">
-                    <p className="font-medium text-foreground mb-1">
-                      Check your inbox
-                    </p>
-                    <p className="text-muted-foreground">
-                      We sent a sign-in link to{" "}
-                      <span className="text-foreground">{codeEmail}</span>.
-                      Click it — you'll land on a page showing your 6-digit
-                      extension code.
-                    </p>
+                <form onSubmit={handleVerifyCode} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm">
+                      Enter the 6-digit code sent to {codeEmail}
+                    </Label>
+                    <div className="flex justify-center pt-2">
+                      <InputOTP
+                        maxLength={6}
+                        value={code}
+                        onChange={(v) => setCode(v)}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Already signed in here?{" "}
-                    <button
-                      type="button"
-                      onClick={() => navigate("/extension-login")}
-                      className="text-primary hover:underline"
-                    >
-                      Get your code now
-                    </button>
-                    .
-                  </p>
+                  <Button
+                    variant="hero"
+                    className="w-full"
+                    type="submit"
+                    disabled={codeLoading || code.length !== 6}
+                  >
+                    {codeLoading ? "Verifying..." : "Verify & sign in"}
+                  </Button>
                   <div className="flex justify-between text-xs">
                     <button
                       type="button"
@@ -279,10 +281,10 @@ const Auth = () => {
                       disabled={codeLoading}
                       className="text-primary hover:underline disabled:opacity-50"
                     >
-                      Resend email
+                      Resend code
                     </button>
                   </div>
-                </div>
+                </form>
               )}
             </TabsContent>
 
