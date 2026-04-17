@@ -1,7 +1,6 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardHero from "@/components/dashboard/DashboardHero";
 import AccountStatusCard from "@/components/dashboard/AccountStatusCard";
-import UsageCard from "@/components/dashboard/UsageCard";
 import DownloadInstallSection from "@/components/dashboard/DownloadInstallSection";
 import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
@@ -19,22 +18,19 @@ const Dashboard = () => {
       </div>
 
       <div className="container mx-auto px-6 pb-24 space-y-8">
-        {/* Top row: Account + Usage */}
+        {/* Top row: Account + Pair extension */}
         <div className="grid md:grid-cols-2 gap-6">
           <Reveal className="hover-scale"><AccountStatusCard /></Reveal>
-          <Reveal delay={80} className="hover-scale"><UsageCard /></Reveal>
+          <Reveal delay={80} className="hover-scale">
+            <div id="extension">
+              <ConnectExtension />
+            </div>
+          </Reveal>
         </div>
 
         {/* Send Smart usage (live from Send Smart backend) */}
         <Reveal delay={100}>
           <SendSmartUsageCard />
-        </Reveal>
-
-        {/* Pair Chrome extension */}
-        <Reveal delay={120}>
-          <div id="extension">
-            <ConnectExtension />
-          </div>
         </Reveal>
 
         {/* Download & Install */}
