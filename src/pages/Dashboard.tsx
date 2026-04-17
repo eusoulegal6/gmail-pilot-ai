@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardHero from "@/components/dashboard/DashboardHero";
 import AccountStatusCard from "@/components/dashboard/AccountStatusCard";
@@ -7,6 +9,15 @@ import TestingSection from "@/components/dashboard/TestingSection";
 import HelpSection from "@/components/dashboard/HelpSection";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("pendingExtensionLogin") === "1") {
+      localStorage.removeItem("pendingExtensionLogin");
+      navigate("/extension-login", { replace: true });
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
