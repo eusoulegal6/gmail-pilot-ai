@@ -1,4 +1,5 @@
 import { Database, UserCog, Filter, Mail } from "lucide-react";
+import Reveal from "./Reveal";
 
 const features = [
   {
@@ -48,16 +49,16 @@ const CustomizationSection = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-          {features.map((f) => (
-            <div key={f.title} className="flex gap-4 p-5 rounded-xl border border-border bg-card">
-              <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${f.bg} shrink-0`}>
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={i * 80} className="card-lift flex gap-4 p-5 rounded-xl border border-border bg-card">
+              <div className={`card-lift-icon flex h-9 w-9 items-center justify-center rounded-lg ${f.bg} shrink-0`}>
                 <f.icon size={18} className={f.color} />
               </div>
               <div>
                 <h3 className="font-semibold text-sm mb-1">{f.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>

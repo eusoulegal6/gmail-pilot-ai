@@ -1,4 +1,5 @@
 import { Clock, MessageSquare, Fingerprint, Shield, PenTool, Settings } from "lucide-react";
+import Reveal from "./Reveal";
 
 const benefits = [
   {
@@ -59,17 +60,18 @@ const BenefitsSection = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {benefits.map((b) => (
-            <div
+          {benefits.map((b, i) => (
+            <Reveal
               key={b.title}
-              className="rounded-xl border border-border bg-card p-6 hover:border-primary/20 transition-colors"
+              delay={i * 80}
+              className="card-lift rounded-xl border border-border bg-card p-6"
             >
-              <div className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${b.bg} mb-4`}>
+              <div className={`card-lift-icon inline-flex h-9 w-9 items-center justify-center rounded-lg ${b.bg} mb-4`}>
                 <b.icon className={`h-5 w-5 ${b.color}`} />
               </div>
               <h3 className="font-semibold mb-2">{b.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{b.description}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
