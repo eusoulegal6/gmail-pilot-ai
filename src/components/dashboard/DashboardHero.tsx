@@ -75,10 +75,12 @@ const DashboardHero = () => {
                 <X size={16} />
               </button>
               <video
+                ref={videoRef}
                 className="w-full"
                 controls
                 autoPlay
                 playsInline
+                preload="auto"
               >
                 <source src="/videos/send-smart-demo.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
