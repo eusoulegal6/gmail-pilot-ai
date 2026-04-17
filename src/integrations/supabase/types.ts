@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      extension_pair_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          redeemed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          redeemed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          redeemed_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       extension_settings: {
         Row: {
           allowed_senders: string[] | null
@@ -106,6 +133,36 @@ export type Database = {
           skip_no_reply_senders?: boolean | null
           skip_replied_threads?: boolean | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      extension_tokens: {
+        Row: {
+          created_at: string
+          device_label: string | null
+          id: string
+          last_used_at: string | null
+          revoked_at: string | null
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_label?: string | null
+          id?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_label?: string | null
+          id?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+          token?: string
           user_id?: string
         }
         Relationships: []
