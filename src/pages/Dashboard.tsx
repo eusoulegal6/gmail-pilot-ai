@@ -12,9 +12,17 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("pendingExtensionLogin") === "1") {
+    // Magic-link callback always lands with auth tokens in the URL hash
+    // (e.g. #access_token=...&type=magiclink). When present, the user just
+    // clicked an email sign-in link — forward them to /extension-login.
+    const hash = window.location.hash || "";
+    const isMagicLinkCallback =
+      hash.includes("access_token") || hash.includes("type=magiclink");
+    const flagged = localStorage.getItem("pendingExtensionLogin") === "1";
+
+    if (isMagicLinkCallback || flagged) {
       localStorage.removeItem("pendingExtensionLogin");
-      navigate("/extension-login", { replace: true });
+      navigate("/extension-login" + hash, { replace: true });
     }
   }, [navigate]);
 
