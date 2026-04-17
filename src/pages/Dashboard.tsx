@@ -7,35 +7,44 @@ import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
 import HelpSection from "@/components/dashboard/HelpSection";
 import ConnectExtension from "@/components/ConnectExtension";
+import Reveal from "@/components/landing/Reveal";
 
 const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
-      <DashboardHero />
+      <div className="animate-fade-in">
+        <DashboardHero />
+      </div>
 
       <div className="container mx-auto px-6 pb-24 space-y-8">
         {/* Top row: Account + Usage */}
         <div className="grid md:grid-cols-2 gap-6">
-          <AccountStatusCard />
-          <UsageCard />
+          <Reveal className="hover-scale"><AccountStatusCard /></Reveal>
+          <Reveal delay={80} className="hover-scale"><UsageCard /></Reveal>
         </div>
 
         {/* Pair Chrome extension */}
-        <div id="extension">
-          <ConnectExtension />
-        </div>
+        <Reveal delay={120}>
+          <div id="extension">
+            <ConnectExtension />
+          </div>
+        </Reveal>
 
         {/* Download & Install */}
-        <DownloadInstallSection />
+        <Reveal delay={160}>
+          <DownloadInstallSection />
+        </Reveal>
 
         {/* Settings overview */}
-        <SettingsOverview />
+        <Reveal delay={200}>
+          <SettingsOverview />
+        </Reveal>
 
         {/* Two-column: Testing + Help */}
         <div className="grid lg:grid-cols-2 gap-6">
-          <TestingSection />
-          <HelpSection />
+          <Reveal delay={240} className="hover-scale"><TestingSection /></Reveal>
+          <Reveal delay={300} className="hover-scale"><HelpSection /></Reveal>
         </div>
       </div>
     </div>
