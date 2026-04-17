@@ -2,7 +2,6 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardHero from "@/components/dashboard/DashboardHero";
 import AccountStatusCard from "@/components/dashboard/AccountStatusCard";
 import DownloadInstallSection from "@/components/dashboard/DownloadInstallSection";
-import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
 import HelpSection from "@/components/dashboard/HelpSection";
 import ConnectExtension from "@/components/ConnectExtension";
@@ -36,11 +35,6 @@ const Dashboard = () => {
         {/* Download & Install */}
         <Reveal delay={160}>
           <DownloadInstallSection />
-        </Reveal>
-
-        {/* Settings overview */}
-        <Reveal delay={200}>
-          <SettingsOverview />
         </Reveal>
 
         {/* Two-column: Testing + Help */}
