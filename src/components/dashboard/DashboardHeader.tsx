@@ -22,7 +22,16 @@ const DashboardHeader = () => {
         </a>
 
         <div className="hidden md:flex items-center gap-6">
-          <a href="/dashboard" className="text-sm text-foreground transition-colors">Dashboard</a>
+          <a
+            href="#top"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="text-sm text-foreground transition-colors"
+          >
+            Dashboard
+          </a>
           <a href="#usage" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Usage</a>
           <a href="#help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</a>
         </div>

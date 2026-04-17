@@ -29,7 +29,9 @@ const Dashboard = () => {
 
         {/* Send Smart usage (live from Send Smart backend) */}
         <Reveal delay={100}>
-          <SendSmartUsageCard />
+          <div id="usage">
+            <SendSmartUsageCard />
+          </div>
         </Reveal>
 
         {/* Download & Install */}
