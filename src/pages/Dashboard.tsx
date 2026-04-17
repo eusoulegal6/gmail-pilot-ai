@@ -1,7 +1,6 @@
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardHero from "@/components/dashboard/DashboardHero";
 import AccountStatusCard from "@/components/dashboard/AccountStatusCard";
-import UsageCard from "@/components/dashboard/UsageCard";
 import DownloadInstallSection from "@/components/dashboard/DownloadInstallSection";
 import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
