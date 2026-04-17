@@ -21,7 +21,7 @@ const HeroSection = () => {
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.08] tracking-tight mb-6 opacity-0 animate-fade-up" style={{ animationDelay: "0.1s" }}>
             Your inbox replies itself.{" "}
-            <span className="text-gradient">Intelligently.</span>
+            <span className="text-gradient-animated">Intelligently.</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed opacity-0 animate-fade-up" style={{ animationDelay: "0.2s" }}>
@@ -43,7 +43,10 @@ const HeroSection = () => {
         <div className="mt-16 md:mt-24 max-w-lg mx-auto opacity-0 animate-fade-up" style={{ animationDelay: "0.5s" }}>
           <div className="rounded-xl border border-border bg-card p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-3 w-3 rounded-full bg-brand-green" />
+              <span className="relative flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-green animate-ping-ring" />
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-brand-green" />
+              </span>
               <span className="text-sm font-medium text-foreground">Send Smart — Active</span>
               <span className="ml-auto text-xs text-muted-foreground">Review Mode</span>
             </div>
@@ -53,7 +56,14 @@ const HeroSection = () => {
                 <div className="text-sm text-foreground">"Hi, do you offer bulk pricing for orders over 500 units?"</div>
               </div>
               <div className="rounded-lg border border-brand-blue/20 bg-brand-blue/5 p-3">
-                <div className="text-xs text-brand-blue mb-1">AI Draft Reply</div>
+                <div className="text-xs text-brand-blue mb-1 flex items-center gap-2">
+                  AI Draft Reply
+                  <span className="inline-flex gap-0.5">
+                    <span className="h-1 w-1 rounded-full bg-brand-blue animate-typing-dot" style={{ animationDelay: "0s" }} />
+                    <span className="h-1 w-1 rounded-full bg-brand-blue animate-typing-dot" style={{ animationDelay: "0.2s" }} />
+                    <span className="h-1 w-1 rounded-full bg-brand-blue animate-typing-dot" style={{ animationDelay: "0.4s" }} />
+                  </span>
+                </div>
                 <div className="text-sm text-foreground">"Thank you for your interest! Yes, we offer tiered pricing for bulk orders. For 500+ units, we can offer a 15% discount. I'll send over a detailed quote shortly."</div>
               </div>
               <div className="flex gap-2 justify-end">

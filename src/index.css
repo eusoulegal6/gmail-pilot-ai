@@ -76,9 +76,19 @@
 @layer utilities {
   .text-gradient {
     background: var(--hero-gradient);
+    background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .text-gradient-animated {
+    background: var(--hero-gradient);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 8s ease-in-out infinite;
   }
 
   .glow-primary {
@@ -91,5 +101,52 @@
 
   .surface-elevated {
     background-color: hsl(var(--surface-elevated));
+  }
+
+  .card-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-primary/30;
+  }
+
+  .card-lift-icon {
+    @apply transition-transform duration-300 ease-out;
+  }
+
+  .card-lift:hover .card-lift-icon {
+    @apply scale-110 rotate-3;
+  }
+
+  .story-link {
+    @apply relative inline-block;
+  }
+  .story-link::after {
+    content: "";
+    @apply absolute left-0 -bottom-0.5 h-px w-full origin-bottom-right scale-x-0 bg-foreground transition-transform duration-300 ease-out;
+  }
+  .story-link:hover::after {
+    @apply origin-bottom-left scale-x-100;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .reveal.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

@@ -9,7 +9,7 @@ const FinalCTASection = () => {
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
             Stop writing the same replies.{" "}
-            <span className="text-gradient">Start sending smart.</span>
+            <span className="text-gradient-animated">Start sending smart.</span>
           </h2>
           <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
             Install the extension, configure your business context, and let AI handle your repetitive email. Takes two minutes.
