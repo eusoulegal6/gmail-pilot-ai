@@ -119,19 +119,14 @@ const SendSmartUsageCard = () => {
           <>
             <div className="space-y-4">
               <UsageBar
-                label="Emails"
+                label="Emails processed"
                 used={data.used.emails}
                 quota={data.quota.emails}
               />
               <UsageBar
-                label="Input tokens"
-                used={data.used.inputTokens}
-                quota={data.quota.inputTokens}
-              />
-              <UsageBar
-                label="Output tokens"
-                used={data.used.outputTokens}
-                quota={data.quota.outputTokens}
+                label="AI usage"
+                used={data.used.inputTokens + data.used.outputTokens}
+                quota={data.quota.inputTokens + data.quota.outputTokens}
               />
             </div>
 
