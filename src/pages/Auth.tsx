@@ -92,14 +92,14 @@ const Auth = () => {
         email: codeEmail,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}/extension-login`,
         },
       });
       if (error) throw error;
       setCodeStep("verify");
       toast({
-        title: "Code sent",
-        description: `We emailed a 6-digit code to ${codeEmail}.`,
+        title: "Check your email",
+        description: `We sent a sign-in link to ${codeEmail}. Click it to get your extension code.`,
       });
     } catch (error: any) {
       toast({
@@ -141,10 +141,13 @@ const Auth = () => {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email: codeEmail,
-        options: { shouldCreateUser: true, emailRedirectTo: window.location.origin },
+        options: {
+          shouldCreateUser: true,
+          emailRedirectTo: `${window.location.origin}/extension-login`,
+        },
       });
       if (error) throw error;
-      toast({ title: "Code resent", description: "Check your inbox." });
+      toast({ title: "Email resent", description: "Check your inbox." });
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
