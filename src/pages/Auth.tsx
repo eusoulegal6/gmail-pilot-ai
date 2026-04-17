@@ -2,31 +2,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-
-type CodeStep = "request" | "verify";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // Email-code (OTP) state
-  const [codeEmail, setCodeEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [codeStep, setCodeStep] = useState<CodeStep>("request");
-  const [codeLoading, setCodeLoading] = useState(false);
-
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -83,87 +68,13 @@ const Auth = () => {
     navigate("/");
   };
 
-  const handleRequestCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!codeEmail) return;
-    setCodeLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: codeEmail,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: window.location.origin,
-        },
-      });
-      if (error) throw error;
-      setCodeStep("verify");
-      toast({
-        title: "Code sent",
-        description: `We emailed a 6-digit code to ${codeEmail}.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setCodeLoading(false);
-    }
-  };
-
-  const handleVerifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (code.length !== 6) return;
-    setCodeLoading(true);
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: codeEmail,
-        token: code,
-        type: "email",
-      });
-      if (error) throw error;
-      navigate("/");
-    } catch (error: any) {
-      toast({
-        title: "Invalid code",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setCodeLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (!codeEmail) return;
-    setCodeLoading(true);
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: codeEmail,
-        options: { shouldCreateUser: true, emailRedirectTo: window.location.origin },
-      });
-      if (error) throw error;
-      toast({ title: "Code resent", description: "Check your inbox." });
-    } catch (error: any) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } finally {
-      setCodeLoading(false);
-    }
-  };
-
-  const resetCodeFlow = () => {
-    setCodeStep("request");
-    setCode("");
-  };
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gradient mb-2">Send Smart</h1>
           <p className="text-muted-foreground text-sm">
-            Sign in to your account
+            {isLogin ? "Sign in to your account" : "Create your account"}
           </p>
         </div>
 
@@ -203,132 +114,44 @@ const Auth = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="code" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="code">Email code</TabsTrigger>
-              <TabsTrigger value="password">Password</TabsTrigger>
-            </TabsList>
+          <form onSubmit={handleEmailAuth} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                minLength={6}
+              />
+            </div>
+            <Button variant="hero" className="w-full" type="submit" disabled={loading}>
+              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+            </Button>
+          </form>
 
-            <TabsContent value="code" className="space-y-4 mt-4">
-              {codeStep === "request" ? (
-                <form onSubmit={handleRequestCode} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="code-email" className="text-sm">Email</Label>
-                    <Input
-                      id="code-email"
-                      type="email"
-                      value={codeEmail}
-                      onChange={(e) => setCodeEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                    />
-                  </div>
-                  <Button
-                    variant="hero"
-                    className="w-full"
-                    type="submit"
-                    disabled={codeLoading}
-                  >
-                    {codeLoading ? "Sending..." : "Send me a code"}
-                  </Button>
-                  <p className="text-center text-xs text-muted-foreground">
-                    We'll email you a 6-digit code. The same code works in the
-                    Send Smart extension.
-                  </p>
-                </form>
-              ) : (
-                <form onSubmit={handleVerifyCode} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-sm">
-                      Enter the 6-digit code sent to {codeEmail}
-                    </Label>
-                    <div className="flex justify-center pt-2">
-                      <InputOTP
-                        maxLength={6}
-                        value={code}
-                        onChange={(v) => setCode(v)}
-                      >
-                        <InputOTPGroup>
-                          <InputOTPSlot index={0} />
-                          <InputOTPSlot index={1} />
-                          <InputOTPSlot index={2} />
-                          <InputOTPSlot index={3} />
-                          <InputOTPSlot index={4} />
-                          <InputOTPSlot index={5} />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </div>
-                  </div>
-                  <Button
-                    variant="hero"
-                    className="w-full"
-                    type="submit"
-                    disabled={codeLoading || code.length !== 6}
-                  >
-                    {codeLoading ? "Verifying..." : "Verify & sign in"}
-                  </Button>
-                  <div className="flex justify-between text-xs">
-                    <button
-                      type="button"
-                      onClick={resetCodeFlow}
-                      className="text-muted-foreground hover:underline"
-                    >
-                      ← Use a different email
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleResendCode}
-                      disabled={codeLoading}
-                      className="text-primary hover:underline disabled:opacity-50"
-                    >
-                      Resend code
-                    </button>
-                  </div>
-                </form>
-              )}
-            </TabsContent>
-
-            <TabsContent value="password" className="space-y-4 mt-4">
-              <form onSubmit={handleEmailAuth} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    minLength={6}
-                  />
-                </div>
-                <Button variant="hero" className="w-full" type="submit" disabled={loading}>
-                  {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
-                </Button>
-              </form>
-
-              <p className="text-center text-xs text-muted-foreground">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-                <button
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-primary hover:underline"
-                >
-                  {isLogin ? "Sign up" : "Sign in"}
-                </button>
-              </p>
-            </TabsContent>
-          </Tabs>
+          <p className="text-center text-xs text-muted-foreground">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-primary hover:underline"
+            >
+              {isLogin ? "Sign up" : "Sign in"}
+            </button>
+          </p>
         </div>
       </div>
     </div>
