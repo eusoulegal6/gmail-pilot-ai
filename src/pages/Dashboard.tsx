@@ -2,7 +2,9 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardHero from "@/components/dashboard/DashboardHero";
 import AccountStatusCard from "@/components/dashboard/AccountStatusCard";
 import UsageCard from "@/components/dashboard/UsageCard";
+import SetupChecklist from "@/components/dashboard/SetupChecklist";
 import DownloadInstallSection from "@/components/dashboard/DownloadInstallSection";
+import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
 import HelpSection from "@/components/dashboard/HelpSection";
 
@@ -19,8 +21,14 @@ const Dashboard = () => {
           <UsageCard />
         </div>
 
+        {/* Setup checklist */}
+        <SetupChecklist />
+
         {/* Download & Install */}
         <DownloadInstallSection />
+
+        {/* Settings overview */}
+        <SettingsOverview />
 
         {/* Two-column: Testing + Help */}
         <div className="grid lg:grid-cols-2 gap-6">
