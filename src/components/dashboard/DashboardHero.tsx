@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download, BookOpen, Play, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useExtensionDownload } from "@/hooks/use-extension-download";
 
@@ -8,6 +8,32 @@ const DashboardHero = () => {
   const { user } = useAuth();
   const { handleDownload } = useExtensionDownload();
   const [showVideo, setShowVideo] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (!showVideo) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handlePause = () => {
+      // Resume if pause wasn't user-initiated (e.g. browser throttling)
+      if (!video.ended && document.visibilityState === "visible") {
+        video.play().catch(() => {});
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible" && video.paused && !video.ended) {
+        video.play().catch(() => {});
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      video.pause();
+    };
+  }, [showVideo]);
   const firstName = user?.user_metadata?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
 
   return (
@@ -49,10 +75,12 @@ const DashboardHero = () => {
                 <X size={16} />
               </button>
               <video
+                ref={videoRef}
                 className="w-full"
                 controls
                 autoPlay
                 playsInline
+                preload="auto"
               >
                 <source src="/videos/send-smart-demo.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
