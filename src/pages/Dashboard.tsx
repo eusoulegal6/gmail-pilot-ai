@@ -8,6 +8,7 @@ import TestingSection from "@/components/dashboard/TestingSection";
 import HelpSection from "@/components/dashboard/HelpSection";
 import ConnectExtension from "@/components/ConnectExtension";
 import Reveal from "@/components/landing/Reveal";
+import SendSmartUsageCard from "@/components/SendSmartUsageCard";
 
 const Dashboard = () => {
   return (
@@ -23,6 +24,11 @@ const Dashboard = () => {
           <Reveal className="hover-scale"><AccountStatusCard /></Reveal>
           <Reveal delay={80} className="hover-scale"><UsageCard /></Reveal>
         </div>
+
+        {/* Send Smart usage (live from Send Smart backend) */}
+        <Reveal delay={100}>
+          <SendSmartUsageCard />
+        </Reveal>
 
         {/* Pair Chrome extension */}
         <Reveal delay={120}>
