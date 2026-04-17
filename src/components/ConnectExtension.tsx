@@ -115,6 +115,8 @@ const ConnectExtension = () => {
           </div>
         ) : (
           <Button
+            variant="hero"
+            size="lg"
             onClick={generateCode}
             disabled={generating}
             className="w-full sm:w-auto"
