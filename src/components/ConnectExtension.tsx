@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
-import type { Session } from "@supabase/supabase-js";
-import {
-  sendsmartSupabase,
-  SENDSMART_FUNCTIONS_URL,
-  SENDSMART_ANON_KEY,
-} from "@/lib/sendsmartClient";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Card,
   CardContent,
@@ -13,41 +9,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Copy, Loader2, RefreshCw, LogOut } from "lucide-react";
+import { Copy, Loader2, RefreshCw } from "lucide-react";
+
+const SENDSMART_PAIR_CREATE_URL =
+  "https://uexdjvbdqwrzlgfrpgbl.supabase.co/functions/v1/pair-create";
+const SENDSMART_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleGRqdmJkcXdyemxnZnJwZ2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzE2NDEsImV4cCI6MjA5MDI0NzY0MX0.-BAr2q1F_2Kn-v0foNSfSvuRbGEnaom_kPZI-r7f6Nw";
 
 const ConnectExtension = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [authReady, setAuthReady] = useState(false);
-
-  // sign-in form
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [signingIn, setSigningIn] = useState(false);
-  const [signInError, setSignInError] = useState<string | null>(null);
-
-  // pairing code state
+  const navigate = useNavigate();
   const [code, setCode] = useState<string | null>(null);
-  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [generating, setGenerating] = useState(false);
   const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    sendsmartSupabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setAuthReady(true);
-    });
-    const { data: sub } = sendsmartSupabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      if (!s) {
-        setCode(null);
-        setExpiresAt(null);
-      }
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -55,7 +30,7 @@ const ConnectExtension = () => {
   }, []);
 
   const secondsLeft = expiresAt
-    ? Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / 1000))
+    ? Math.max(0, Math.floor((expiresAt.getTime() - now) / 1000))
     : 0;
 
   useEffect(() => {
@@ -65,58 +40,32 @@ const ConnectExtension = () => {
     }
   }, [secondsLeft, expiresAt]);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSigningIn(true);
-    setSignInError(null);
-    const { error } = await sendsmartSupabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setSigningIn(false);
-    if (error) {
-      setSignInError(error.message);
-      return;
-    }
-    setPassword("");
-  };
-
-  const handleSignOut = async () => {
-    await sendsmartSupabase.auth.signOut();
-    setCode(null);
-    setExpiresAt(null);
-  };
-
   const generateCode = async () => {
-    const { data: sessData } = await sendsmartSupabase.auth.getSession();
-    const token = sessData.session?.access_token;
-    if (!token) {
-      toast.error("Please sign in to Send Smart first.");
-      return;
-    }
     setGenerating(true);
     try {
-      const res = await fetch(`${SENDSMART_FUNCTIONS_URL}/pair-create`, {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      const res = await fetch(SENDSMART_PAIR_CREATE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           apikey: SENDSMART_ANON_KEY,
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: "{}",
       });
       const data = await res.json();
-      if (res.status === 401) {
-        await sendsmartSupabase.auth.signOut();
-        toast.error("Your Send Smart session expired. Please sign in again.");
-        return;
-      }
       if (!res.ok) {
         toast.error(data?.error ?? "Failed to generate code");
         return;
       }
       setCode(data.code);
-      setExpiresAt(data.expiresAt);
+      setExpiresAt(new Date(data.expiresAt));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Network error");
     } finally {
@@ -130,92 +79,13 @@ const ConnectExtension = () => {
     toast.success("Code copied");
   };
 
-  if (!authReady) {
-    return (
-      <Card>
-        <CardContent className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading…
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // (a) Not signed in to Send Smart
-  if (!session) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Sign in to Send Smart</CardTitle>
-          <CardDescription>
-            You need a Send Smart account to generate codes for the extension.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSignIn} className="space-y-4 max-w-sm">
-            <div className="space-y-2">
-              <Label htmlFor="ss-email">Email</Label>
-              <Input
-                id="ss-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ss-password">Password</Label>
-              <Input
-                id="ss-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-            {signInError && (
-              <p className="text-sm text-destructive">{signInError}</p>
-            )}
-            <Button type="submit" disabled={signingIn}>
-              {signingIn ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in…
-                </>
-              ) : (
-                "Sign in to Send Smart"
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // (b) / (c) Signed in
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle className="text-xl">Pairing code</CardTitle>
-            <CardDescription>
-              Signed in to Send Smart as{" "}
-              <span className="text-foreground">{session.user.email}</span>.
-              Codes expire shortly after generation.
-            </CardDescription>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSignOut}
-            className="text-muted-foreground"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign out
-          </Button>
-        </div>
+        <CardTitle className="text-xl">Pairing code</CardTitle>
+        <CardDescription>
+          Generate a one-time code, then paste it into the extension popup.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {code ? (
