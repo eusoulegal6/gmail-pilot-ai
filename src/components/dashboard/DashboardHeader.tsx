@@ -23,7 +23,7 @@ const DashboardHeader = () => {
 
         <div className="hidden md:flex items-center gap-6">
           <a href="/dashboard" className="text-sm text-foreground transition-colors">Dashboard</a>
-          <a href="/extension" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Extension</a>
+          <a href="#extension" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Extension</a>
           <a href="#setup" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Setup</a>
           <a href="#settings" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Settings</a>
           <a href="#usage" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Usage</a>
