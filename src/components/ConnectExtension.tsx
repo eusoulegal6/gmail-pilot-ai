@@ -1,62 +1,127 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Session } from "@supabase/supabase-js";
+import {
+  sendsmartSupabase,
+  SENDSMART_FUNCTIONS_URL,
+  SENDSMART_ANON_KEY,
+} from "@/lib/sendsmartClient";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Copy, Loader2, RefreshCw, Trash2, Smartphone } from "lucide-react";
-
-interface ExtensionToken {
-  id: string;
-  device_label: string | null;
-  created_at: string;
-  last_used_at: string | null;
-  revoked_at: string | null;
-}
+import { Copy, Loader2, RefreshCw, LogOut } from "lucide-react";
 
 const ConnectExtension = () => {
-  const { user } = useAuth();
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+
+  // sign-in form
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
+
+  // pairing code state
   const [code, setCode] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
-  const [tokens, setTokens] = useState<ExtensionToken[]>([]);
-  const [loadingTokens, setLoadingTokens] = useState(true);
   const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    sendsmartSupabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setAuthReady(true);
+    });
+    const { data: sub } = sendsmartSupabase.auth.onAuthStateChange((_e, s) => {
+      setSession(s);
+      if (!s) {
+        setCode(null);
+        setExpiresAt(null);
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
 
-  const fetchTokens = async () => {
-    if (!user) return;
-    setLoadingTokens(true);
-    const { data, error } = await supabase
-      .from("extension_tokens")
-      .select("id, device_label, created_at, last_used_at, revoked_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    if (!error && data) setTokens(data as ExtensionToken[]);
-    setLoadingTokens(false);
-  };
+  const secondsLeft = expiresAt
+    ? Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / 1000))
+    : 0;
 
   useEffect(() => {
-    fetchTokens();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+    if (expiresAt && secondsLeft === 0) {
+      setCode(null);
+      setExpiresAt(null);
+    }
+  }, [secondsLeft, expiresAt]);
 
-  const generateCode = async () => {
-    setGenerating(true);
-    setCode(null);
-    setExpiresAt(null);
-    const { data, error } = await supabase.functions.invoke("pair-create");
-    setGenerating(false);
-    if (error || !data?.code) {
-      toast.error(error?.message ?? "Failed to generate code");
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSigningIn(true);
+    setSignInError(null);
+    const { error } = await sendsmartSupabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    setSigningIn(false);
+    if (error) {
+      setSignInError(error.message);
       return;
     }
-    setCode(data.code);
-    setExpiresAt(data.expiresAt);
+    setPassword("");
+  };
+
+  const handleSignOut = async () => {
+    await sendsmartSupabase.auth.signOut();
+    setCode(null);
+    setExpiresAt(null);
+  };
+
+  const generateCode = async () => {
+    const { data: sessData } = await sendsmartSupabase.auth.getSession();
+    const token = sessData.session?.access_token;
+    if (!token) {
+      toast.error("Please sign in to Send Smart first.");
+      return;
+    }
+    setGenerating(true);
+    try {
+      const res = await fetch(`${SENDSMART_FUNCTIONS_URL}/pair-create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SENDSMART_ANON_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: "{}",
+      });
+      const data = await res.json();
+      if (res.status === 401) {
+        await sendsmartSupabase.auth.signOut();
+        toast.error("Your Send Smart session expired. Please sign in again.");
+        return;
+      }
+      if (!res.ok) {
+        toast.error(data?.error ?? "Failed to generate code");
+        return;
+      }
+      setCode(data.code);
+      setExpiresAt(data.expiresAt);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Network error");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const copyCode = async () => {
@@ -65,118 +130,137 @@ const ConnectExtension = () => {
     toast.success("Code copied");
   };
 
-  const revokeToken = async (id: string) => {
-    const { error } = await supabase
-      .from("extension_tokens")
-      .update({ revoked_at: new Date().toISOString() })
-      .eq("id", id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Device disconnected");
-    fetchTokens();
-  };
-
-  const secondsLeft = expiresAt
-    ? Math.max(0, Math.floor((new Date(expiresAt).getTime() - now) / 1000))
-    : 0;
-  const codeExpired = !!expiresAt && secondsLeft === 0;
-
-  const activeTokens = tokens.filter((t) => !t.revoked_at);
-
-  return (
-    <div className="space-y-6">
+  if (!authReady) {
+    return (
       <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Pairing code</CardTitle>
-          <CardDescription>
-            Generate a one-time code, then paste it into the extension popup. Codes expire in 10 minutes.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {code ? (
-            <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/40 py-8">
-              <div className="font-mono text-4xl font-semibold tracking-[0.4em] text-foreground">
-                {code}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {codeExpired
-                  ? "Expired — generate a new one"
-                  : `Expires in ${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, "0")}`}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={copyCode} disabled={codeExpired}>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy
-                </Button>
-                <Button variant="outline" size="sm" onClick={generateCode} disabled={generating}>
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  New code
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <Button onClick={generateCode} disabled={generating} className="w-full sm:w-auto">
-              {generating ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating…
-                </>
-              ) : (
-                "Generate pairing code"
-              )}
-            </Button>
-          )}
+        <CardContent className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading…
         </CardContent>
       </Card>
+    );
+  }
 
+  // (a) Not signed in to Send Smart
+  if (!session) {
+    return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Connected devices</CardTitle>
+          <CardTitle className="text-xl">Sign in to Send Smart</CardTitle>
           <CardDescription>
-            {activeTokens.length === 0
-              ? "No devices connected yet."
-              : `${activeTokens.length} device${activeTokens.length === 1 ? "" : "s"} connected.`}
+            You need a Send Smart account to generate codes for the extension.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loadingTokens ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+          <form onSubmit={handleSignIn} className="space-y-4 max-w-sm">
+            <div className="space-y-2">
+              <Label htmlFor="ss-email">Email</Label>
+              <Input
+                id="ss-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
             </div>
-          ) : activeTokens.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Once you redeem a pairing code from the extension, it will appear here.
-            </p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {activeTokens.map((t) => (
-                <li key={t.id} className="flex items-center justify-between gap-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-md border border-border bg-muted p-2">
-                      <Smartphone className="h-4 w-4 text-foreground" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-foreground">
-                        {t.device_label || "Chrome extension"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Connected {new Date(t.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => revokeToken(t.id)}>
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Disconnect
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          )}
+            <div className="space-y-2">
+              <Label htmlFor="ss-password">Password</Label>
+              <Input
+                id="ss-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            {signInError && (
+              <p className="text-sm text-destructive">{signInError}</p>
+            )}
+            <Button type="submit" disabled={signingIn}>
+              {signingIn ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                "Sign in to Send Smart"
+              )}
+            </Button>
+          </form>
         </CardContent>
       </Card>
-    </div>
+    );
+  }
+
+  // (b) / (c) Signed in
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <CardTitle className="text-xl">Pairing code</CardTitle>
+            <CardDescription>
+              Signed in to Send Smart as{" "}
+              <span className="text-foreground">{session.user.email}</span>.
+              Codes expire shortly after generation.
+            </CardDescription>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSignOut}
+            className="text-muted-foreground"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign out
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {code ? (
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-muted/40 py-8">
+            <div className="font-mono text-4xl font-semibold tracking-[0.2em] text-foreground">
+              {code}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Expires in {Math.floor(secondsLeft / 60)}:
+              {String(secondsLeft % 60).padStart(2, "0")}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={copyCode}>
+                <Copy className="mr-2 h-4 w-4" />
+                Copy
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={generateCode}
+                disabled={generating}
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                New code
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            onClick={generateCode}
+            disabled={generating}
+            className="w-full sm:w-auto"
+          >
+            {generating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating…
+              </>
+            ) : (
+              "Generate pairing code"
+            )}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
