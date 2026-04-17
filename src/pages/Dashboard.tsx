@@ -2,7 +2,6 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardHero from "@/components/dashboard/DashboardHero";
 import AccountStatusCard from "@/components/dashboard/AccountStatusCard";
 import UsageCard from "@/components/dashboard/UsageCard";
-import SetupChecklist from "@/components/dashboard/SetupChecklist";
 import DownloadInstallSection from "@/components/dashboard/DownloadInstallSection";
 import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
@@ -24,9 +23,6 @@ const Dashboard = () => {
 
         {/* Chrome extension promo */}
         <ExtensionPromoCard />
-
-        {/* Setup checklist */}
-        <SetupChecklist />
 
         {/* Download & Install */}
         <DownloadInstallSection />
