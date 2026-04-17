@@ -88,6 +88,7 @@ const Auth = () => {
     if (!codeEmail) return;
     setCodeLoading(true);
     try {
+      localStorage.setItem("pendingExtensionLogin", "1");
       const { error } = await supabase.auth.signInWithOtp({
         email: codeEmail,
         options: {
@@ -139,6 +140,7 @@ const Auth = () => {
     if (!codeEmail) return;
     setCodeLoading(true);
     try {
+      localStorage.setItem("pendingExtensionLogin", "1");
       const { error } = await supabase.auth.signInWithOtp({
         email: codeEmail,
         options: {
