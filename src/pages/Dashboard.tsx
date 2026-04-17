@@ -6,7 +6,7 @@ import DownloadInstallSection from "@/components/dashboard/DownloadInstallSectio
 import SettingsOverview from "@/components/dashboard/SettingsOverview";
 import TestingSection from "@/components/dashboard/TestingSection";
 import HelpSection from "@/components/dashboard/HelpSection";
-import ExtensionPromoCard from "@/components/dashboard/ExtensionPromoCard";
+import ConnectExtension from "@/components/ConnectExtension";
 
 const Dashboard = () => {
   return (
@@ -21,8 +21,10 @@ const Dashboard = () => {
           <UsageCard />
         </div>
 
-        {/* Chrome extension promo */}
-        <ExtensionPromoCard />
+        {/* Pair Chrome extension */}
+        <div id="extension">
+          <ConnectExtension />
+        </div>
 
         {/* Download & Install */}
         <DownloadInstallSection />
