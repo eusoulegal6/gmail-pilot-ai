@@ -17,7 +17,7 @@ const DownloadInstallSection = () => {
   const { handleDownload } = useExtensionDownload();
 
   return (
-    <Card id="download">
+    <Card id="setup">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Download size={18} className="text-primary" />
