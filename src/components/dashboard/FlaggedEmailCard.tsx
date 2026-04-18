@@ -1,6 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Mail, Clock, Check, Loader2 } from "lucide-react";
 import type { FlaggedEmail } from "@/hooks/useFlaggedEmails";
+import { useResolveFlagged } from "@/hooks/useResolveFlagged";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const dtf = new Intl.DateTimeFormat(undefined, {
@@ -51,6 +54,23 @@ function ageInfo(createdAt: string) {
 export default function FlaggedEmailCard({ email }: { email: FlaggedEmail }) {
   const { label, badgeClass, borderClass } = ageInfo(email.createdAt);
   const displayName = email.senderName?.trim() || email.senderEmail;
+  const resolve = useResolveFlagged();
+  const { toast } = useToast();
+
+  const handleResolve = () => {
+    resolve.mutate(email.id, {
+      onSuccess: () => {
+        toast({ title: "Marked as solved", description: "Removed from review queue." });
+      },
+      onError: (err) => {
+        toast({
+          title: "Couldn't mark as solved",
+          description: err instanceof Error ? err.message : "Try again.",
+          variant: "destructive",
+        });
+      },
+    });
+  };
 
   return (
     <Card className={cn("border-l-4 transition-colors hover:border-primary/40", borderClass)}>
@@ -87,8 +107,24 @@ export default function FlaggedEmailCard({ email }: { email: FlaggedEmail }) {
           </p>
         </div>
 
-        <div className="pt-1 border-t border-border/50 text-[11px] text-muted-foreground">
-          Received {dtf.format(new Date(email.createdAt))}
+        <div className="pt-1 border-t border-border/50 flex items-center justify-between gap-2">
+          <span className="text-[11px] text-muted-foreground">
+            Received {dtf.format(new Date(email.createdAt))}
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 px-2 text-xs"
+            onClick={handleResolve}
+            disabled={resolve.isPending}
+          >
+            {resolve.isPending ? (
+              <Loader2 size={12} className="animate-spin" />
+            ) : (
+              <Check size={12} />
+            )}
+            I replied
+          </Button>
         </div>
       </CardContent>
     </Card>
