@@ -18,9 +18,33 @@ export function useExtensionDownload() {
       return;
     }
 
+    // List whatever is in the bucket and grab the first file (most recent).
+    const { data: files, error: listError } = await supabase.storage
+      .from("extension-downloads")
+      .list("", { limit: 100, sortBy: { column: "updated_at", order: "desc" } });
+
+    if (listError || !files || files.length === 0) {
+      toast({
+        title: "Download failed",
+        description: "No extension package found. Please try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const file = files.find((f) => f.name && !f.name.endsWith("/"));
+    if (!file) {
+      toast({
+        title: "Download failed",
+        description: "No extension package found.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const { data, error } = await supabase.storage
       .from("extension-downloads")
-      .download("ChromeExtensionAgent 2.rar");
+      .download(file.name);
 
     if (error || !data) {
       toast({
@@ -34,7 +58,7 @@ export function useExtensionDownload() {
     const url = URL.createObjectURL(data);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "SendSmart-Extension.rar";
+    a.download = file.name;
     a.click();
     URL.revokeObjectURL(url);
   };
