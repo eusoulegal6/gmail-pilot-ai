@@ -4,6 +4,7 @@ import { Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useExtensionDownload } from "@/hooks/use-extension-download";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,7 +28,8 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-6">
-        <a href="/" className="text-xl font-bold tracking-tight">
+        <a href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight">
+          <img src={logo} alt="Send Smart logo" className="h-8 w-8" width={32} height={32} />
           <span className="text-gradient">Send Smart</span>
         </a>
 
