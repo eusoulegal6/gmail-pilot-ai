@@ -1,6 +1,7 @@
 import { Mail, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useExtensionDownload } from "@/hooks/use-extension-download";
+import AnimatedInbox from "./AnimatedInbox";
 
 const HeroSection = () => {
   const { handleDownload } = useExtensionDownload();
@@ -39,39 +40,9 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Mock extension popup */}
+        {/* Animated inbox loop */}
         <div className="mt-16 md:mt-24 max-w-lg mx-auto opacity-0 animate-fade-up" style={{ animationDelay: "0.5s" }}>
-          <div className="rounded-xl border border-border bg-card p-6 shadow-2xl">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="relative flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-green animate-ping-ring" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-brand-green" />
-              </span>
-              <span className="text-sm font-medium text-foreground">Send Smart — Active</span>
-              <span className="ml-auto text-xs text-muted-foreground">Review Mode</span>
-            </div>
-            <div className="space-y-3">
-              <div className="rounded-lg bg-muted p-3">
-                <div className="text-xs text-muted-foreground mb-1">From: customer@example.com</div>
-                <div className="text-sm text-foreground">"Hi, do you offer bulk pricing for orders over 500 units?"</div>
-              </div>
-              <div className="rounded-lg border border-brand-blue/20 bg-brand-blue/5 p-3">
-                <div className="text-xs text-brand-blue mb-1 flex items-center gap-2">
-                  AI Draft Reply
-                  <span className="inline-flex gap-0.5">
-                    <span className="h-1 w-1 rounded-full bg-brand-blue animate-typing-dot" style={{ animationDelay: "0s" }} />
-                    <span className="h-1 w-1 rounded-full bg-brand-blue animate-typing-dot" style={{ animationDelay: "0.2s" }} />
-                    <span className="h-1 w-1 rounded-full bg-brand-blue animate-typing-dot" style={{ animationDelay: "0.4s" }} />
-                  </span>
-                </div>
-                <div className="text-sm text-foreground">"Thank you for your interest! Yes, we offer tiered pricing for bulk orders. For 500+ units, we can offer a 15% discount. I'll send over a detailed quote shortly."</div>
-              </div>
-              <div className="flex gap-2 justify-end">
-                <span className="text-xs px-3 py-1.5 rounded-md bg-secondary text-secondary-foreground">Edit</span>
-                <span className="text-xs px-3 py-1.5 rounded-md bg-brand-blue text-primary-foreground font-medium">Send Reply</span>
-              </div>
-            </div>
-          </div>
+          <AnimatedInbox />
         </div>
       </div>
     </section>
