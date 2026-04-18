@@ -32,6 +32,7 @@ const DashboardHeader = () => {
           >
             Dashboard
           </a>
+          <a href="#review" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Review</a>
           <a href="#usage" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Usage</a>
           <a href="#help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</a>
         </div>

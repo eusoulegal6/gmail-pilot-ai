@@ -7,6 +7,7 @@ import HelpSection from "@/components/dashboard/HelpSection";
 import ConnectExtension from "@/components/ConnectExtension";
 import Reveal from "@/components/landing/Reveal";
 import SendSmartUsageCard from "@/components/SendSmartUsageCard";
+import FlaggedReviewSection from "@/components/dashboard/FlaggedReviewSection";
 
 const Dashboard = () => {
   return (
@@ -26,6 +27,13 @@ const Dashboard = () => {
             </div>
           </Reveal>
         </div>
+
+        {/* Flagged for review */}
+        <Reveal delay={90}>
+          <div id="review">
+            <FlaggedReviewSection />
+          </div>
+        </Reveal>
 
         {/* Send Smart usage (live from Send Smart backend) */}
         <Reveal delay={100}>
