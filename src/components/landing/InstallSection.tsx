@@ -1,4 +1,4 @@
-import { Download, FolderOpen, Chrome, ToggleRight, Upload, CheckCircle } from "lucide-react";
+import { Download, FolderOpen, Chrome, ToggleRight, Upload, KeyRound, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useExtensionDownload } from "@/hooks/use-extension-download";
 
@@ -6,11 +6,11 @@ const steps = [
   {
     icon: Download,
     title: "Download the extension",
-    description: "Download the Send Smart extension package (.zip file) from the link provided.",
+    description: "Download the Send Smart extension archive from the link provided.",
   },
   {
     icon: FolderOpen,
-    title: "Unzip the file",
+    title: "Extract the archive",
     description: "Extract the downloaded archive to a folder on your computer. You'll need the extracted folder for the next step.",
   },
   {
@@ -27,6 +27,11 @@ const steps = [
     icon: Upload,
     title: 'Click "Load unpacked"',
     description: "Click the Load unpacked button that appears, then select the folder you extracted in step 2.",
+  },
+  {
+    icon: KeyRound,
+    title: "Pair with your account",
+    description: "Sign in to your Send Smart dashboard, generate a pairing code, and paste it into the extension popup to link it to your account.",
   },
   {
     icon: CheckCircle,
