@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertTriangle, CheckCircle2, RefreshCw, MessageSquare } from "lucide-react";
+import { AlertTriangle, CheckCircle2, RefreshCw, MessageSquare, X } from "lucide-react";
 import { useAgentReplies } from "@/hooks/useAgentReplies";
 import AgentReplyCard from "./AgentReplyCard";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,15 @@ export default function AgentRepliesSection() {
     });
   }, []);
 
+  const handleDismissAll = useCallback(() => {
+    setDismissedIds((prev) => {
+      const visibleIds = visibleReplies.map((r) => r.id ?? `${r.createdAt}-${r.senderEmail}`);
+      const next = [...prev, ...visibleIds];
+      saveDismissedIds(next);
+      return next;
+    });
+  }, []);
+
   const visibleReplies = replies.filter(
     (r) => !dismissedIds.includes(r.id ?? `${r.createdAt}-${r.senderEmail}`)
   );
@@ -53,16 +62,29 @@ export default function AgentRepliesSection() {
             </Badge>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="gap-1.5"
-        >
-          <RefreshCw size={14} className={cn(isFetching && "animate-spin")} />
-          <span className="hidden sm:inline">Refresh</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="gap-1.5"
+          >
+            <RefreshCw size={14} className={cn(isFetching && "animate-spin")} />
+            <span className="hidden sm:inline">Refresh</span>
+          </Button>
+          {!isLoading && !error && visibleReplies.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDismissAll}
+              className="gap-1.5 text-muted-foreground hover:text-destructive"
+            >
+              <X size={14} />
+              <span className="hidden sm:inline">Dismiss all</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {error && (
