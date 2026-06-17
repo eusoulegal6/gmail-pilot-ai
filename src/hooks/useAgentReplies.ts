@@ -13,6 +13,7 @@ export interface AgentReply {
   senderEmail: string;
   decision: string;
   replyBody?: string;
+  draft?: string;
 }
 
 interface UsageResponse {
@@ -53,9 +54,9 @@ export function useAgentReplies() {
 
         if (res.ok) {
           const data = (await res.json()) as UsageResponse;
-          return (data.recent ?? []).filter((r) =>
-            REPLY_DECISIONS.has(r.decision?.toLowerCase() ?? "")
-          );
+          return (data.recent ?? [])
+            .filter((r) => REPLY_DECISIONS.has(r.decision?.toLowerCase() ?? ""))
+            .map((r) => ({ ...r, replyBody: r.draft ?? r.replyBody }));
         }
 
         let message = `Request failed (${res.status})`;
