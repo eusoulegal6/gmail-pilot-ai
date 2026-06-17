@@ -7,10 +7,12 @@ const SEND_SMART_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleGRqdmJkcXdyemxnZnJwZ2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzE2NDEsImV4cCI6MjA5MDI0NzY0MX0.-BAr2q1F_2Kn-v0foNSfSvuRbGEnaom_kPZI-r7f6Nw";
 
 export interface AgentReply {
+  id?: string;
   createdAt: string;
   subject: string;
   senderEmail: string;
   decision: string;
+  replyBody?: string;
 }
 
 interface UsageResponse {
