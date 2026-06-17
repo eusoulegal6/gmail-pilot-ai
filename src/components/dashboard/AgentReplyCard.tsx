@@ -79,9 +79,15 @@ export default function AgentReplyCard({
             <p className="font-semibold text-sm leading-snug line-clamp-1">
               {reply.subject || "(no subject)"}
             </p>
-            <p className="text-xs text-muted-foreground">
-              AI sent a reply to this email.
-            </p>
+            {reply.replyBody ? (
+              <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                {reply.replyBody}
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                AI sent a reply to this email.
+              </p>
+            )}
           </div>
 
           <div className="pt-1 border-t border-border/50 flex items-center justify-between gap-2">
