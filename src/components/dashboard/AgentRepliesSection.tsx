@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +9,37 @@ import { useAgentReplies } from "@/hooks/useAgentReplies";
 import AgentReplyCard from "./AgentReplyCard";
 import { cn } from "@/lib/utils";
 
+const STORAGE_KEY = "agent-replies-dismissed";
+
+function getDismissedIds(): string[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveDismissedIds(ids: string[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+}
+
 export default function AgentRepliesSection() {
   const { replies, isLoading, error, refetch, isFetching } = useAgentReplies();
+  const [dismissedIds, setDismissedIds] = useState<string[]>(getDismissedIds);
+
+  const handleDismiss = useCallback((reply: { id?: string; createdAt: string; senderEmail: string }) => {
+    const id = reply.id ?? `${reply.createdAt}-${reply.senderEmail}`;
+    setDismissedIds((prev) => {
+      const next = [...prev, id];
+      saveDismissedIds(next);
+      return next;
+    });
+  }, []);
+
+  const visibleReplies = replies.filter(
+    (r) => !dismissedIds.includes(r.id ?? `${r.createdAt}-${r.senderEmail}`)
+  );
 
   return (
     <section className="space-y-4">
@@ -19,7 +49,7 @@ export default function AgentRepliesSection() {
           <h2 className="text-xl font-semibold">Agent Replies</h2>
           {!isLoading && !error && (
             <Badge variant="secondary" className="ml-1">
-              {replies.length}
+              {visibleReplies.length}
             </Badge>
           )}
         </div>
@@ -59,7 +89,7 @@ export default function AgentRepliesSection() {
         </div>
       )}
 
-      {!isLoading && !error && replies.length === 0 && (
+      {!isLoading && !error && visibleReplies.length === 0 && (
         <Card>
           <CardContent className="p-8 flex flex-col items-center justify-center text-center gap-2">
             <CheckCircle2 className="h-8 w-8 text-muted-foreground" />
@@ -71,10 +101,14 @@ export default function AgentRepliesSection() {
         </Card>
       )}
 
-      {!isLoading && !error && replies.length > 0 && (
+      {!isLoading && !error && visibleReplies.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {replies.map((reply, i) => (
-            <AgentReplyCard key={`${reply.createdAt}-${i}`} reply={reply} />
+          {visibleReplies.map((reply, i) => (
+            <AgentReplyCard
+              key={`${reply.createdAt}-${i}`}
+              reply={reply}
+              onDismiss={() => handleDismiss(reply)}
+            />
           ))}
         </div>
       )}
