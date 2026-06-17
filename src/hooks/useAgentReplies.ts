@@ -13,6 +13,7 @@ export interface AgentReply {
   senderEmail: string;
   decision: string;
   replyBody?: string;
+  draft?: string;
 }
 
 interface UsageResponse {
