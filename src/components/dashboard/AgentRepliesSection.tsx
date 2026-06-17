@@ -39,12 +39,14 @@ export default function AgentRepliesSection() {
 
   const handleDismissAll = useCallback(() => {
     setDismissedIds((prev) => {
-      const visibleIds = visibleReplies.map((r) => r.id ?? `${r.createdAt}-${r.senderEmail}`);
+      const visibleIds = replies
+        .filter((r) => !prev.includes(r.id ?? `${r.createdAt}-${r.senderEmail}`))
+        .map((r) => r.id ?? `${r.createdAt}-${r.senderEmail}`);
       const next = [...prev, ...visibleIds];
       saveDismissedIds(next);
       return next;
     });
-  }, []);
+  }, [replies]);
 
   const visibleReplies = replies.filter(
     (r) => !dismissedIds.includes(r.id ?? `${r.createdAt}-${r.senderEmail}`)
